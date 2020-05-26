@@ -1,15 +1,16 @@
-﻿#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
+#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 #Warn  ; Enable warnings to assist with detecting common errors.
 #SingleInstance, force ; Forces a single instance
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+CoordMode, Mouse, Screen
 
 ; Setup.
 hotkey, +``, toggle
-hotkey, $*space, toggle
-hotkey, !^F8, toggle
+; hotkey, !^F8, toggle
 NumHotkeys := False
 SetScrollLockState, off ; Sroll Lock set to false for numpad Hotkeys
+return
 
 ; deactivators
 $Browser_Home:: sendinput, {Volume_Mute}
@@ -25,7 +26,10 @@ home:: suspend
 +`:: 
 { 
   sendinput, {F22}
-    hotkey, ~$*Space, toggle
+  hotkey, ~$*Space, toggle
+  discx := (A_ScreenWidth / 2)
+  discy := (A_ScreenHeight / 2)
+  mousemove, discx, discy
   return
 }
 numpaddiv:: sendinput, {F23}
@@ -72,12 +76,17 @@ SCrollLock::
   return
 }
 #If, NumHotkeys
-Numpad1:: Run, "GeneralHotkeys.ahk", Minimize
+Numpad1:: Run, "GeneralAHK.ahk", Minimize
 Numpad2:: return
 #If
 
 ; Spotify Shyte
-*F2:: sendinput, {Media_Play_Pause}
+*F2:: 
+{
+  sendinput, {Media_Play_Pause}
+  goto, MoveMouseToCorner
+  return
+}
 getSpotifyHwnd() 
 {
 	WinGet, spotifyHwnd, ID, ahk_exe spotify.exe
@@ -95,7 +104,33 @@ spotifyKey(key)
 	Return
 }
 
-+Up::     spotifyKey("^{Up}")
-+Down::   spotifykey("^{Down}")
-+Left::   spotifykey("^{Left}")
-+Right::  spotifykey("^{Right}")
++Up::
+{
+  spotifyKey("^{Up}")
+  goto, MoveMouseToCorner
+  return
+}
++Down::
+{
+  spotifykey("^{Down}")
+  goto, MoveMouseToCorner
+  return
+}
++Left::
+{
+  SendInput, {Media_Prev}
+  goto, MoveMouseToCorner
+  return
+}
++Right::
+{
+  SendInput, {Media_Next}
+  goto, MoveMouseToCorner
+  return
+}
+MoveMouseToCorner:
+  if WinActive("ahk_exe VALORANT-Win64-Shipping.exe")
+  {
+    mousemove, A_screenwidth, A_ScreenHeight
+  }
+return
