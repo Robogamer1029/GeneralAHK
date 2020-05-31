@@ -36,7 +36,6 @@ numpaddiv:: sendinput, {F23}
 numpadmult:: sendinput, {F24}
 
 ; special hotkeys^tm
-*F4:: hotkey, $*space, toggle
 !^F9:: run, "Disable Interwebs.bat", Minimize
 
 !^f8:: ; Discord Spammer
@@ -52,29 +51,52 @@ numpadmult:: sendinput, {F24}
 return
 }
 
+; Game Specific stuffs
+#If, WinActive("ahk_exe VALORANT-Win64-Shipping.exe") ; Valor Ant
+*F4:: hotkey, $*space, toggle
 ~$*space::
 {
    Loop
    {
-     if not GetKeyState("space", "P") or !WinActive("ahk_exe VALORANT-Win64-Shipping.exe") ; Bhopping for Valorant
+     if not GetKeyState("space", "P") ; B-hopping
         break
       SendInput, {space}
      sleep, 50
    }
 return
 }
+#if
 
-#If, WinActive("ahk_exe javaw.exe") ; s-taping for Minecraft
+#If, WinActive("ahk_exe javaw.exe") ; Minecraft
 *Xbutton2::s
 #If
 
+#If, WinActive("ahk_exe csgo.exe") ; Counter-Srike: Globul Offensive
+*WheelLeft:: SendInput, 6
+*MButton:: SendInput, 7
+*WheelRight:: SendInput, 8
+*F4:: hotkey, $*space, toggle
+~$*space::
+{
+   Loop
+   {
+     if not GetKeyState("space", "P") ; B-hopping
+        break
+      SendInput, {space}
+     sleep, 50
+   }
+return
+}
+#If
+
 ; Numpad Commands (Toggled with Scroll Lock)
-SCrollLock:: 
+ScrollLock:: 
 {
   NumHotkeys := !NumHotkeys
   SetScrollLockState % !GetKeyState("ScrollLock", "T")
   return
 }
+
 #If, NumHotkeys
 Numpad1:: Run, "GeneralAHK.ahk", Minimize
 Numpad2:: return
@@ -87,10 +109,10 @@ Numpad2:: return
   goto, MoveMouseToCorner
   return
 }
+
 getSpotifyHwnd() 
 {
 	WinGet, spotifyHwnd, ID, ahk_exe spotify.exe
-	; We need the app's third top level window, so get next twice.
 	spotifyHwnd := DllCall("GetWindow", "uint", spotifyHwnd, "uint", 2)
 	spotifyHwnd := DllCall("GetWindow", "uint", spotifyHwnd, "uint", 2)
 	Return spotifyHwnd
@@ -129,8 +151,10 @@ spotifyKey(key)
   return
 }
 MoveMouseToCorner:
+{
   if WinActive("ahk_exe VALORANT-Win64-Shipping.exe")
   {
     mousemove, A_screenwidth, A_ScreenHeight
   }
-return
+  return
+}
